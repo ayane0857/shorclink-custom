@@ -54,7 +54,7 @@ func main() {
 		AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization", "X-API-Token"},
 		ExposeHeaders:    []string{"Content-Length"},
 		AllowCredentials: true,
-		MaxAge:           12 * time.Hour,
+		MaxAge:           12 * 60 * 60,
 	}))
 
 	// デバッグ用ミドルウェア

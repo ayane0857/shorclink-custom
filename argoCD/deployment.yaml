@@ -120,19 +120,13 @@ spec:
               value: "Asia/Tokyo"
             - name: PGTZ
               value: "Asia/Tokyo"
+            # PostgreSQL設定を環境変数で上書き
+            - name: POSTGRES_INITDB_ARGS
+              value: "--encoding=UTF8 --locale=ja_JP.UTF-8"
           volumeMounts:
             - name: postgres-persistent-storage
               mountPath: "/var/lib/postgresql/data"
-            - name: postgres-config-volume
-              mountPath: "/var/lib/postgresql/data/postgresql.conf"
-              subPath: postgresql.conf
-            - name: postgres-config-volume
-              mountPath: "/etc/postgresql/pg_hba.conf"
-              subPath: pg_hba.conf
       volumes:
         - name: postgres-persistent-storage
           persistentVolumeClaim:
             claimName: ayane-shortlink
-        - name: postgres-config-volume
-          configMap:
-            name: postgres-config

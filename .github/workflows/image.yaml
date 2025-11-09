@@ -36,7 +36,7 @@ jobs:
           password: ${{ secrets.HARBOR_TOKEN }}
 
       - name: Build Docker image
-        run: docker build -f Dockerfile.build --progress=plain -t registry.uniproject.jp/ayane/shortlink:${{ env.TAG_NAME }} .
+        run: docker build --progress=plain -t registry.uniproject.jp/ayane/shortlink:${{ env.TAG_NAME }} .
 
       - name: Push Docker image
         run: docker push registry.uniproject.jp/ayane/shortlink:${{ env.TAG_NAME }}

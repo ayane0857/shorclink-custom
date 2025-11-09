@@ -8,7 +8,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func ShortLink(db *gorm.DB) gin.HandlerFunc {
+func RedirectShortLink(db *gorm.DB) gin.HandlerFunc {
     return func(c *gin.Context) {
         var model models.ShortLink
         var id = c.Param("id")

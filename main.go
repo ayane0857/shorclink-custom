@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+
 	"shorclick/handlers"
 	"shorclick/models"
 
@@ -46,14 +47,21 @@ func main() {
 	// Ginのセットアップ
 	r:= gin.Default()
 	log.Println("Starting server on :8080")
+
 	r.GET("/", func(c *gin.Context) {
 		c.Redirect(http.StatusMovedPermanently, original_link)
 	})
-	r.GET("/api", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"message": "don't setup api token",
-		})
-	})
-	r.GET("/:id", handlers.ShortLink(db))
+
+  	r.GET("/api", handlers.RequireAPIToken(), handlers.GetShortLinks(db))
+  	r.GET("/api/:id", handlers.RequireAPIToken(), handlers.GetShortLink(db))
+
+  	r.POST("/api", handlers.RequireAPIToken(), handlers.PostShortLink(db))
+
+  	r.PUT("/api/:id", handlers.RequireAPIToken(), handlers.PutShortLink(db))
+
+  	r.DELETE("/api/:id", handlers.RequireAPIToken(), handlers.DeleteShortLink(db))
+
+	r.GET("/:id", handlers.RedirectShortLink(db))
+
 	r.Run(":8080")
 }

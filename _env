@@ -1,10 +1,16 @@
 # Environment variables
 ORIGINAL_LINK = https://example.com/
+
+# API settings
+API = required
 API_TOKEN = your_api_token
+
+# SHORT_CODE settings
+SHORT_CODE = auto
+SHORT_CODE_LENGTH = 6
 
 # Database configuration
 POSTGRES_USER=your_db_user
 POSTGRES_PASSWORD=your_db_password
 POSTGRES_DB=your_db_name
 POSTGRES_HOST=localhost
-POSTGRES_PORT=5432

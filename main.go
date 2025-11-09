@@ -74,8 +74,10 @@ func main() {
 	api := r.Group("/api")
 	api.Use(handlers.RequireAPIToken())
 	{
+		api.GET("", handlers.GetShortLinks(db))
 		api.GET("/", handlers.GetShortLinks(db))
 		api.GET("/:id", handlers.GetShortLink(db))
+		api.POST("", handlers.SetShortCode(), handlers.PostShortLink(db))
 		api.POST("/", handlers.SetShortCode(), handlers.PostShortLink(db))
 		api.PUT("/:id", handlers.SetShortCode(), handlers.PutShortLink(db))
 		api.DELETE("/:id",  handlers.DeleteShortLink(db))

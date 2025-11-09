@@ -19,6 +19,11 @@ func RequireAPIToken() gin.HandlerFunc {
 			return
 		}
 		token := c.GetHeader("X-API-Token")
+
+		if token == "" && c.Request.Method == "GET" {
+			token = c.Query("X-API-Token")
+		}
+		
 		if token != os.Getenv("API_TOKEN") {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 			c.Abort()

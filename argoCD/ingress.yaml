@@ -8,7 +8,7 @@ metadata:
 spec:
   ingressClassName: traefik
   rules:
-    - host: .ayane.xyz
+    - host: ayane.xyz
       http:
         paths:
           - pathType: Prefix

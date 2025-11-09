@@ -132,7 +132,7 @@ spec:
       volumes:
         - name: postgres-persistent-storage
           persistentVolumeClaim:
-            claimName: db
+            claimName: ayane-shortlink
         - name: postgres-config-volume
           configMap:
             name: postgres-config

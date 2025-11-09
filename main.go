@@ -48,12 +48,8 @@ func main() {
 
 	// Ginのセットアップ
 	r:= gin.Default()
-	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"*"},
-		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-		AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization", "X-API-Token"},
-		MaxAge:           12 * 60 * 60,
-	}))
+	allowOrigins := []string{"http://localhost:3000", "https://ayane.xyz"}
+	r.Use(corsMiddleware(allowOrigins))
 
 	// デバッグ用ミドルウェア
 	r.Use(func(c *gin.Context) {
@@ -123,4 +119,10 @@ func createDatabaseIfNotExists(host, port, user, password, dbName string) {
 		return
 	}
 	sqlDB.Close()
+}
+
+func corsMiddleware(allowOrigins []string) gin.HandlerFunc {
+    config := cors.DefaultConfig() // デフォルト設定を作成
+    config.AllowOrigins = allowOrigins // 許可するオリジンを設定
+    return cors.New(config) // 設定を元にCORSミドルウェアを生成
 }

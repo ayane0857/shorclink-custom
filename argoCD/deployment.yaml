@@ -64,7 +64,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: go-secret
-                  key: POSTGRES_USER
+                  key: POSTGRES_DB
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:
@@ -105,7 +105,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: go-secret
-                  key: POSTGRES_USER
+                  key: POSTGRES_DB
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:
@@ -124,7 +124,7 @@ spec:
             - name: postgres-persistent-storage
               mountPath: "/var/lib/postgresql/data"
             - name: postgres-config-volume
-              mountPath: "/etc/postgresql/postgresql.conf"
+              mountPath: "/var/lib/postgresql/data/postgresql.conf"
               subPath: postgresql.conf
             - name: postgres-config-volume
               mountPath: "/etc/postgresql/pg_hba.conf"

@@ -1,0 +1,112 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ayane-payment-api
+spec:
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app: ayane-payment-api
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: ayane-payment-api
+    spec:
+      imagePullSecrets:
+        - name: internal-harbor
+      containers:
+        - name: app
+          image: registry.uniproject.jp/ayane/payment-api:0.2.6
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+              name: default-port
+          resources:
+            limits:
+              memory: "2Gi"
+              cpu: "2000m"
+            requests:
+              memory: "1Gi"
+              cpu: "100m"
+          env:
+            - name: API_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: go-secret
+                  key: API_PASSWORD
+            - name: POSTGRES_HOST
+              value: "ayane-payment-api-db"
+            - name: POSTGRES_PORT
+              value: "5432"
+            - name: POSTGRES_DB
+              value: "payment_db"
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: go-secret
+                  key: POSTGRES_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: go-secret
+                  key: POSTGRES_PASSWORD
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ayane-payment-api-db
+spec:
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app: ayane-payment-api-db
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: ayane-payment-api-db
+    spec:
+      imagePullSecrets:
+        - name: internal-harbor
+      containers:
+        - name: postgres
+          image: postgres:17
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 5432
+              name: postgres
+          env:
+            - name: POSTGRES_DB
+              value: "payment_db"
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: go-secret
+                  key: POSTGRES_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: go-secret
+                  key: POSTGRES_PASSWORD
+            - name: TZ
+              value: "Asia/Tokyo"
+            - name: PGTZ
+              value: "Asia/Tokyo"
+          volumeMounts:
+            - name: postgres-persistent-storage
+              mountPath: "/var/lib/postgresql/data"
+            - name: postgres-config-volume
+              mountPath: "/etc/postgresql/postgresql.conf"
+              subPath: postgresql.conf
+            - name: postgres-config-volume
+              mountPath: "/etc/postgresql/pg_hba.conf"
+              subPath: pg_hba.conf
+      volumes:
+        - name: postgres-persistent-storage
+          persistentVolumeClaim:
+            claimName: db
+        - name: postgres-config-volume
+          configMap:
+            name: postgres-config

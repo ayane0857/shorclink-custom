@@ -1,0 +1,16 @@
+FROM golang:1.21-alpine
+
+WORKDIR /app
+
+# 必要なパッケージのインストール
+RUN apk add --no-cache git
+
+# 依存関係のコピーとダウンロード
+COPY go.mod ./
+RUN go mod download
+
+# ソースコードのコピー
+COPY . .
+
+# アプリケーションのビルド
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o shorlink .

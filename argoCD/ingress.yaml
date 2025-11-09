@@ -8,13 +8,13 @@ metadata:
 spec:
   ingressClassName: traefik
   rules:
-    - host: api.ayane0857.net
+    - host: .ayane.xyz
       http:
         paths:
           - pathType: Prefix
-            path: /payment
+            path: /
             backend:
               service:
-                name: ayane-payment-api
+                name: ayane-shortlink
                 port:
                   number: 80

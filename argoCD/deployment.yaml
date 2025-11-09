@@ -2,23 +2,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: ayane-payment-api
+  name: ayane-shortlink
 spec:
   revisionHistoryLimit: 3
   selector:
     matchLabels:
-      app: ayane-payment-api
+      app: ayane-shortlink
   replicas: 1
   template:
     metadata:
       labels:
-        app: ayane-payment-api
+        app: ayane-shortlink
     spec:
       imagePullSecrets:
         - name: internal-harbor
       containers:
         - name: app
-          image: registry.uniproject.jp/ayane/payment-api:0.2.6
+          image: registry.uniproject.jp/ayane/shortlink:0.0.5
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
@@ -31,17 +31,40 @@ spec:
               memory: "1Gi"
               cpu: "100m"
           env:
-            - name: API_PASSWORD
+            - name: ORIGINAL_LINK
               valueFrom:
                 secretKeyRef:
                   name: go-secret
-                  key: API_PASSWORD
+                  key: ORIGINAL_LINK
+            - name: API
+              valueFrom:
+                secretKeyRef:
+                  name: go-secret
+                  key: API
+            - name: API_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: go-secret
+                  key: API_TOKEN
+            - name: SHORT_CODE
+              valueFrom:
+                secretKeyRef:
+                  name: go-secret
+                  key: SHORT_CODE
+            - name: SHORT_CODE_LENGTH
+              valueFrom:
+                secretKeyRef:
+                  name: go-secret
+                  key: SHORT_CODE_LENGTH
             - name: POSTGRES_HOST
-              value: "ayane-payment-api-db"
+              value: "ayane-shortlink-db"
             - name: POSTGRES_PORT
               value: "5432"
             - name: POSTGRES_DB
-              value: "payment_db"
+              valueFrom:
+                secretKeyRef:
+                  name: go-secret
+                  key: POSTGRES_USER
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:
@@ -56,17 +79,17 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: ayane-payment-api-db
+  name: ayane-shortlink-db
 spec:
   revisionHistoryLimit: 3
   selector:
     matchLabels:
-      app: ayane-payment-api-db
+      app: ayane-shortlink-db
   replicas: 1
   template:
     metadata:
       labels:
-        app: ayane-payment-api-db
+        app: ayane-shortlink-db
     spec:
       imagePullSecrets:
         - name: internal-harbor
@@ -79,7 +102,10 @@ spec:
               name: postgres
           env:
             - name: POSTGRES_DB
-              value: "payment_db"
+              valueFrom:
+                secretKeyRef:
+                  name: go-secret
+                  key: POSTGRES_USER
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:

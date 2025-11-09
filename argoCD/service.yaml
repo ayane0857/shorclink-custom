@@ -2,10 +2,10 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: ayane-payment-api
+  name: ayane-shortlink
 spec:
   selector:
-    app: ayane-payment-api
+    app: ayane-shortlink
   ports:
     - port: 80
       targetPort: 8080
@@ -14,10 +14,10 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: ayane-payment-api-db
+  name: ayane-shortlink-db
 spec:
   selector:
-    app: ayane-payment-api-db
+    app: ayane-shortlink-db
   ports:
     - port: 5432
       targetPort: 5432

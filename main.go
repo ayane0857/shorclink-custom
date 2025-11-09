@@ -49,10 +49,12 @@ func main() {
 	// Ginのセットアップ
 	r:= gin.Default()
 	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"*"},
+		AllowOrigins:     []string{"http://localhost:3000", "https://ayane.xyz"},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-		AllowHeaders:     []string{"*"},
-		AllowCredentials: false,
+		AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization", "X-API-Token"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+		MaxAge:           12 * 3600, // 12時間
 	}))
 	log.Println("Starting server on :8080")
 

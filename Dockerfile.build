@@ -3,11 +3,12 @@ FROM golang:1.21-alpine
 WORKDIR /app
 
 # 必要なパッケージのインストール
-RUN apk add --no-cache git gcc musl-dev
+RUN apk add --no-cache git
 
 # 依存関係のコピーとダウンロード
 COPY go.mod go.sum ./
-RUN go mod tidy && go mod download
+ENV GOPROXY=https://proxy.golang.org,direct
+RUN go mod download
 
 # ソースコードのコピー
 COPY . .

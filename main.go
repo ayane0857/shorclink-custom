@@ -27,6 +27,7 @@ func main() {
 	dbName := os.Getenv("POSTGRES_DB")
 	dbHost := os.Getenv("POSTGRES_HOST")
 	dbPort := "5432"
+	createDatabaseIfNotExists(dbHost, dbPort, dbUser, dbPassword, dbName)
 	log.Println("Connecting to database")
 	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable", dbHost, dbUser, dbPassword, dbName, dbPort)
 
@@ -65,4 +66,43 @@ func main() {
 	r.GET("/:id", handlers.RedirectShortLink(db))
 
 	r.Run(":8080")
+}
+
+func createDatabaseIfNotExists(host, port, user, password, dbName string) {
+	// postgresデータベースに接続（デフォルトで存在する）
+	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=postgres port=%s sslmode=disable", host, user, password, port)
+	
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	if err != nil {
+		log.Fatalln("Failed to connect to postgres database:", err)
+	}
+
+	// データベースの存在確認
+	var exists bool
+	query := fmt.Sprintf("SELECT EXISTS(SELECT 1 FROM pg_database WHERE datname = '%s')", dbName)
+	err = db.Raw(query).Scan(&exists).Error
+	if err != nil {
+		log.Fatalln("Failed to check if database exists:", err)
+	}
+
+	if !exists {
+		log.Printf("Database '%s' does not exist. Creating...\n", dbName)
+		// データベースの作成
+		createQuery := fmt.Sprintf("CREATE DATABASE %s", dbName)
+		err = db.Exec(createQuery).Error
+		if err != nil {
+			log.Fatalln("Failed to create database:", err)
+		}
+		log.Printf("Database '%s' created successfully\n", dbName)
+	} else {
+		log.Printf("Database '%s' already exists\n", dbName)
+	}
+
+	// 接続を閉じる
+	sqlDB, err := db.DB()
+	if err != nil {
+		log.Println("Failed to get database instance:", err)
+		return
+	}
+	sqlDB.Close()
 }
